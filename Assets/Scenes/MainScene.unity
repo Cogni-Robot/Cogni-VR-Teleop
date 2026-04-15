@@ -204,7 +204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ce61150f3a2f74a3b1a5024647a8c2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetIP: 127.0.0.1
+  targetIP: 192.168.1.91
   targetPort: 9000
   sendRate: 30
 --- !u!1 &920795039
