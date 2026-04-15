@@ -272,3 +272,9 @@ pkill -9 Unity
 rm -rf Librairy
 
 and relaunch your project
+
+
+Add in manigest.json:
+```json
+"com.unity.xr.openxr": "1.6.0"
+```

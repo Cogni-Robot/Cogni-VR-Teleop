@@ -11,11 +11,11 @@ using System.Net.Http;
 public class CameraFeed : MonoBehaviour
 {
     [Header("Stream")]
-    [Tooltip("URL du flux MJPEG, ex: http://192.168.1.42:8080/?action=stream")]
-    public string streamUrl = "http://192.168.1.42:8080/?action=stream";
+    [Tooltip("URL du flux MJPEG, ex: http://192.168.1.48:8000/stream.mjpg")]
+    public string streamUrl = "http://192.168.1.48:8000/stream.mjpg";
 
-    [Tooltip("URL d'une frame JPEG unique (snapshot), ex: http://192.168.1.42:8080/?action=snapshot")]
-    public string snapshotUrl = "http://192.168.1.42:8080/?action=snapshot";
+    [Tooltip("URL d'une frame JPEG unique (snapshot), ex: http://192.168.1.42:8080/snapshot.jpg")]
+    public string snapshotUrl = "http://192.168.1.42:8080/snapshot.jpg";
 
     [Range(5, 30)]
     public int framesPerSecond = 15;
