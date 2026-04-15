@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd9fdf0fcbfe4b7d785b5f727f16e894, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  simulationMode: 1
+  simulationMode: 0
   debugLeftHand: {fileID: 2084021624}
   debugRightHand: {fileID: 1531853734}
   headPosition: {x: 0, y: 0, z: 0}
