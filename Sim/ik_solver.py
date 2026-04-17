@@ -150,5 +150,7 @@ class IKSolver:
             self.data.qpos[self.model.jnt_qposadr[torso_yaw_id]] = yaw * 0.5 
         if torso_roll_id != -1:
             self.data.qpos[self.model.jnt_qposadr[torso_roll_id]] = pitch * 0.5
+        if torso_pitch_id != -1:
+            self.data.qpos[self.model.jnt_qposadr[torso_pitch_id]] = roll * 0.5
 
         # Le roll de la tête n'est pas encore envoyé par Unity, à pour le moment
