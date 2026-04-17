@@ -27,12 +27,12 @@ OFFSET_Y = 1.0     # Décalage avant/arrière
 OFFSET_Z = -1.0    # Décalage haut/bas
 
 # La position "default" de repos des mains du robot
-ROBOT_REST_L = np.array([ 0.25, -0.15, 0.20])
-ROBOT_REST_R = np.array([-0.25, -0.15, 0.20])
+ROBOT_REST_L = np.array([ 0.07, -0.20, 0.05])
+ROBOT_REST_R = np.array([-0.07, -0.20, 0.05])
 
 
 ROTATE_180  = True
-MIRROR_MODE = True
+MIRROR_MODE = False
 
 JOINT_NAMES = [
     "rotation_taille", "rotation_roulis_torse", "rotation_tangage_torse",
@@ -78,8 +78,8 @@ def extract_targets(poses: dict) -> tuple:
     global vr_origin_l, vr_origin_r
     
     # 1. Extraction brute des coordonnées VR (avec rotation d'axes)
-    raw_l = np.array([poses["left"]["px"], poses["left"]["pz"], poses["left"]["py"]], dtype=float)
-    raw_r = np.array([poses["right"]["px"], poses["right"]["pz"], poses["right"]["py"]], dtype=float)
+    raw_l = np.array([-poses["left"]["px"], -poses["left"]["pz"], poses["left"]["py"]], dtype=float)
+    raw_r = np.array([-poses["right"]["px"], -poses["right"]["pz"], poses["right"]["py"]], dtype=float)
     
     # 2. AUTO-CALIBRATION sur la première frame reçue
     if vr_origin_l is None or vr_origin_r is None:
