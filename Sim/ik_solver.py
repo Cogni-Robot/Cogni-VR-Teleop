@@ -61,7 +61,8 @@ class IKSolver:
               target_left:  np.ndarray,
               target_right: np.ndarray,
               head_yaw:     float,
-              head_pitch:   float) -> tuple[np.ndarray, bool, bool]:
+              head_pitch:   float,
+              head_roll: float) -> tuple[np.ndarray, bool, bool]:
         """
         Calcule les angles joints pour atteindre les cibles.
 
@@ -76,7 +77,7 @@ class IKSolver:
         ok_left  = self._ik_arm(self._left_id,  target_left)
         ok_right = self._ik_arm(self._right_id, target_right)
 
-        self._set_head_and_torso(head_yaw, head_pitch)
+        self._set_head_and_torso(head_yaw, head_pitch, head_roll)
 
         mujoco.mj_forward(self.model, self.data)
         return self.data.qpos.copy(), ok_left, ok_right

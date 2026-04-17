@@ -102,8 +102,9 @@ def extract_targets(poses: dict) -> tuple:
     qx, qy, qz, qw = poses["head"]["rx"], poses["head"]["ry"], poses["head"]["rz"], poses["head"]["rw"]
     yaw   = math.atan2(2*(qw*qy + qx*qz), 1 - 2*(qy*qy + qz*qz))
     pitch = math.asin(max(-1, min(1, 2*(qw*qx - qy*qz))))
+    roll  = -1 * math.atan2(2*(qw*qz + qx*qy), 1 - 2*(qx*qx + qy*qy))
     
-    return target_left, target_right, float(yaw), float(pitch)
+    return target_left, target_right, float(yaw), float(pitch), float(roll)
 
 
 def qpos_to_named(model: mujoco.MjModel, qpos: np.ndarray) -> dict:
@@ -170,14 +171,15 @@ def main():
             except json.JSONDecodeError:
                 continue
 
-            target_l, target_r, head_yaw, head_pitch = extract_targets(poses)
+            target_l, target_r, head_yaw, head_pitch, head_roll = extract_targets(poses)
 
             # Mise à jour des positions Mocap dans les données de simulation !
             if mocap_id_l != -1: solver.data.mocap_pos[mocap_id_l] = target_l
             if mocap_id_r != -1: solver.data.mocap_pos[mocap_id_r] = target_r
 
             qpos_result, ok_l, ok_r = solver.solve(
-                qpos_current, target_l, target_r, head_yaw, head_pitch
+                qpos_current, target_l, target_r,
+                head_yaw, head_pitch, head_roll
             )
             collision = solver.has_collision()
             left_pos, right_pos = solver.get_ee_positions()
