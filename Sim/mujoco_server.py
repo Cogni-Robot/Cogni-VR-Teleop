@@ -90,7 +90,7 @@ def extract_targets(poses: dict) -> tuple:
         print("Point Zéro VR enregistré.")
         print("="*40 + "\n")
         
-    # 3. Calcul du Delta (de combien tu as bougé depuis le point zéro)
+    # 3. Calcul du Delta
     delta_l = raw_l - vr_origin_l
     delta_r = raw_r - vr_origin_r
     

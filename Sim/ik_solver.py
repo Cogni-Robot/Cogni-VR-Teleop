@@ -94,7 +94,6 @@ class IKSolver:
         )
 
     #  IK interne 
-
     def _ik_arm(self, body_id: int, target: np.ndarray) -> bool:
         nv  = self.model.nv
         jac = np.zeros((3, nv))
@@ -153,5 +152,3 @@ class IKSolver:
             self.data.qpos[self.model.jnt_qposadr[torso_roll_id]] = pitch * 0.5
         if torso_pitch_id != -1:
             self.data.qpos[self.model.jnt_qposadr[torso_pitch_id]] = roll * 0.5
-
-        # Le roll de la tête n'est pas encore envoyé par Unity, à pour le moment
