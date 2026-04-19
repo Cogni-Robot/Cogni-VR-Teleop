@@ -99,4 +99,11 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 
 
+# Python cache files
 __pycache__
+
+# Python env
+Sim/env/
+
+# VsCode settings
+.vscode/
