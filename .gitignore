@@ -107,3 +107,6 @@ Sim/env/
 
 # VsCode settings
 .vscode/
+
+# Cogni-urdf repo
+Sim/Cogni-urdf/
