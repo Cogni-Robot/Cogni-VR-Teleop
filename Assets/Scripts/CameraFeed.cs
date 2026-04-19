@@ -45,14 +45,16 @@ public class CameraFeed : MonoBehaviour
             var task = _http.GetByteArrayAsync(snapshotUrl);
             yield return new WaitUntil(() => task.IsCompleted);
 
-            if (!task.IsFaulted && task.Result != null)
+            if (!task.IsFaulted && !task.IsCanceled && task.Result != null)
             {
-                _tex.LoadImage(task.Result);    // décode JPEG en place
+                _tex.LoadImage(task.Result);
                 _image.texture = _tex;
             }
             else
             {
-                Debug.LogWarning("[CameraFeed] Frame manquée : " + task.Exception?.GetBaseException().Message);
+                Debug.LogWarning("[CameraFeed] Frame manquée : " +
+                                  task.Exception?.GetBaseException().Message
+                                  ?? "Task annulée");
             }
 
             yield return new WaitForSeconds(interval);
