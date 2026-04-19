@@ -9,7 +9,7 @@ public class UDPSender : MonoBehaviour
 {
     // Variables, par défaut -> pointent vers le serveur local mujoco
     [Header("Réseau")]
-    public string targetIP   = "192.168.1.100";
+    public string targetIP   = "192.168.1.159";
     public int    targetPort = 9000;
 
     [Header("Cadence")]
