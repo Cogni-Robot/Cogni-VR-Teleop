@@ -124,10 +124,10 @@ public class OVRController : MonoBehaviour
         if (!dev.isValid) return;
         dev.TryGetFeatureValue(CommonUsages.devicePosition, out pos);
         dev.TryGetFeatureValue(CommonUsages.deviceRotation, out rot);
-        dev.TryGetFeatureValue(CommonUsages.gripButton,     out grip);
+        dev.TryGetFeatureValue(CommonUsages.triggerButton,     out grip);
     }
 
-    // ── Debug visuel ──────────────────────────────────────────────────────
+    // Debug visuel
     void ApplyDebug()
     {
         if (debugLeftHand)  debugLeftHand.position  = leftPosition;
@@ -137,8 +137,8 @@ public class OVRController : MonoBehaviour
         InputDevice leftController = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
         if (leftController.isValid)
         {
-            // Récupère la valeur de la gâchette arrière (Grip)
-            if (leftController.TryGetFeatureValue(CommonUsages.grip, out float gripL))
+            // Récupère la valeur de la gâchette avant (Trigger)
+            if (leftController.TryGetFeatureValue(CommonUsages.trigger, out float gripL))
             {
                 // 0.0 = relâché, 1.0 = pressé à fond
                 leftGripValue = gripL;
@@ -149,8 +149,8 @@ public class OVRController : MonoBehaviour
         InputDevice rightController = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
         if (rightController.isValid)
         {
-            // Récupère la valeur de la gâchette arrière (Grip)
-            if (rightController.TryGetFeatureValue(CommonUsages.grip, out float gripR))
+            // Récupère la valeur de la gâchette avant (Trigger)
+            if (rightController.TryGetFeatureValue(CommonUsages.trigger, out float gripR))
             {
                 // 0.0 = relâché, 1.0 = pressé à fond
                 rightGripValue = gripR;
