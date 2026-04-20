@@ -195,21 +195,23 @@ def main():
             
             # Appliquer les valeurs de grip aux pinces
             # Index 7 = pince gauche, Index 12 = pince droite
-            # Logique : trigger ferme, grip ouvre
-            # Si grip > 0.5, pince ouverte (angle = 0), sinon utiliser trigger pour fermer
+            # Logique : grip > 0 ouvre la pince, trigger > 0 ferme la pince
             max_grip_angle = 1.5
+            min_grip_angle = -0.38  # Minimum autorisé
             
-            # Pince gauche
-            if grip_left > 0.5:
-                qpos_current[7] = 0.0  # Ouverte
+            # Pince gauche (inversée)
+            if grip_left > 0:
+                qpos_current[7] = 0.0  # Ouverte via grip
             else:
-                qpos_current[7] = -trigger_left * max_grip_angle
-            
+                pince_g_angle = trigger_left * max_grip_angle  # Fermée via trigger (inversée)
+                qpos_current[7] = max(pince_g_angle, min_grip_angle)
+
             # Pince droite
-            if grip_right > 0.5:
-                qpos_current[12] = 0.0  # Ouverte
+            if grip_right > 0:
+                qpos_current[12] = 0.0  # Ouverte via grip
             else:
-                qpos_current[12] = -trigger_right * max_grip_angle
+                pince_d_angle = -trigger_right * max_grip_angle  # Fermée via trigger
+                qpos_current[12] = max(pince_d_angle, min_grip_angle)
 
             reply = build_reply(model, qpos_current, ok_l, ok_r, collision, left_pos, right_pos)
             sock.sendto(reply, (addr[0], SEND_PORT))

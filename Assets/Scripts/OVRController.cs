@@ -79,6 +79,8 @@ public class OVRController : MonoBehaviour
         leftPosition = _simLeft;
         leftRotation = Quaternion.identity;
         leftGrip     = Input.GetKey(KeyCode.Space);
+        leftGripValue = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
+        leftGripButtonValue = Input.GetKey(KeyCode.Z) ? 1.0f : 0.0f;
 
         // Main droite : IJKLUO
         if (Input.GetKey(KeyCode.I)) _simRight.z += dt;
@@ -90,6 +92,8 @@ public class OVRController : MonoBehaviour
         rightPosition = _simRight;
         rightRotation = Quaternion.identity;
         rightGrip     = Input.GetKey(KeyCode.Return);
+        rightGripValue = Input.GetKey(KeyCode.Return) ? 1.0f : 0.0f;
+        rightGripButtonValue = Input.GetKey(KeyCode.M) ? 1.0f : 0.0f;
     }
 
     // ── Lecture OpenXR ────────────────────────────────────────────────────
