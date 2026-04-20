@@ -12,6 +12,8 @@ public class OVRController : MonoBehaviour
     public bool simulationMode = true;
     public float leftGripValue = 0.0f;
     public float rightGripValue = 0.0f;
+    public float leftGripButtonValue = 0.0f;
+    public float rightGripButtonValue = 0.0f;
 
 
     [Header("Debug (optionnel)")]
@@ -127,33 +129,39 @@ public class OVRController : MonoBehaviour
         dev.TryGetFeatureValue(CommonUsages.triggerButton,     out grip);
     }
 
-    // Debug visuel
+    // ── Debug visuel ──────────────────────────────────────────────────────
     void ApplyDebug()
     {
         if (debugLeftHand)  debugLeftHand.position  = leftPosition;
         if (debugRightHand) debugRightHand.position = rightPosition;
 
-        // Lecture de la gâchette (main gauche)
+        // Lecture de la gâchette avant (Trigger) - main gauche
         InputDevice leftController = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
         if (leftController.isValid)
         {
-            // Récupère la valeur de la gâchette avant (Trigger)
             if (leftController.TryGetFeatureValue(CommonUsages.trigger, out float gripL))
             {
-                // 0.0 = relâché, 1.0 = pressé à fond
                 leftGripValue = gripL;
+            }
+            // Lecture du bouton grip arrière (Grip) - main gauche
+            if (leftController.TryGetFeatureValue(CommonUsages.grip, out float gripButtonL))
+            {
+                leftGripButtonValue = gripButtonL;
             }
         }
 
-        // Lecture de la gâchette (main droite)
+        // Lecture de la gâchette avant (Trigger) - main droite
         InputDevice rightController = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
         if (rightController.isValid)
         {
-            // Récupère la valeur de la gâchette avant (Trigger)
             if (rightController.TryGetFeatureValue(CommonUsages.trigger, out float gripR))
             {
-                // 0.0 = relâché, 1.0 = pressé à fond
                 rightGripValue = gripR;
+            }
+            // Lecture du bouton grip arrière (Grip) - main droite
+            if (rightController.TryGetFeatureValue(CommonUsages.grip, out float gripButtonR))
+            {
+                rightGripButtonValue = gripButtonR;
             }
         }
     }

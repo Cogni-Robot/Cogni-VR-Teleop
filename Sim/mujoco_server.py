@@ -104,7 +104,13 @@ def extract_targets(poses: dict) -> tuple:
     pitch = math.asin(max(-1, min(1, 2*(qw*qx - qy*qz))))
     roll  = -1 * math.atan2(2*(qw*qz + qx*qy), 1 - 2*(qx*qx + qy*qy))
     
-    return target_left, target_right, float(yaw), float(pitch), float(roll)
+    # 6. Extraction des valeurs de grip et trigger
+    trigger_left  = float(poses["left"].get("triggerValue", 0.0))
+    trigger_right = float(poses["right"].get("triggerValue", 0.0))
+    grip_left     = float(poses["left"].get("gripValue", 0.0))
+    grip_right    = float(poses["right"].get("gripValue", 0.0))
+    
+    return target_left, target_right, float(yaw), float(pitch), float(roll), trigger_left, trigger_right, grip_left, grip_right
 
 
 def qpos_to_named(model: mujoco.MjModel, qpos: np.ndarray) -> dict:
@@ -171,7 +177,7 @@ def main():
             except json.JSONDecodeError:
                 continue
 
-            target_l, target_r, head_yaw, head_pitch, head_roll = extract_targets(poses)
+            target_l, target_r, head_yaw, head_pitch, head_roll, trigger_left, trigger_right, grip_left, grip_right = extract_targets(poses)
 
             # Mise à jour des positions Mocap dans les données de simulation !
             if mocap_id_l != -1: solver.data.mocap_pos[mocap_id_l] = target_l
@@ -186,6 +192,24 @@ def main():
 
             if not collision:
                 qpos_current = qpos_result
+            
+            # Appliquer les valeurs de grip aux pinces
+            # Index 7 = pince gauche, Index 12 = pince droite
+            # Logique : trigger ferme, grip ouvre
+            # Si grip > 0.5, pince ouverte (angle = 0), sinon utiliser trigger pour fermer
+            max_grip_angle = 1.5
+            
+            # Pince gauche
+            if grip_left > 0.5:
+                qpos_current[7] = 0.0  # Ouverte
+            else:
+                qpos_current[7] = -trigger_left * max_grip_angle
+            
+            # Pince droite
+            if grip_right > 0.5:
+                qpos_current[12] = 0.0  # Ouverte
+            else:
+                qpos_current[12] = -trigger_right * max_grip_angle
 
             reply = build_reply(model, qpos_current, ok_l, ok_r, collision, left_pos, right_pos)
             sock.sendto(reply, (addr[0], SEND_PORT))
@@ -202,8 +226,20 @@ def main():
                     f"         Cible G : ({target_l[0]:+.3f}, {target_l[1]:+.3f}, {target_l[2]:+.3f})"
                     f"  EE G : ({left_pos[0]:+.3f}, {left_pos[1]:+.3f}, {left_pos[2]:+.3f})\n"
                     f"         Cible D : ({target_r[0]:+.3f}, {target_r[1]:+.3f}, {target_r[2]:+.3f})"
-                    f"  EE D : ({right_pos[0]:+.3f}, {right_pos[1]:+.3f}, {right_pos[2]:+.3f})"
+                    f"  EE D : ({right_pos[0]:+.3f}, {right_pos[1]:+.3f}, {right_pos[2]:+.3f})\n"
+                    f"         Trigger G : {trigger_left:.3f} | Grip G : {grip_left:.3f}\n"
+                    f"         Trigger D : {trigger_right:.3f} | Grip D : {grip_right:.3f}\n"
+                    f"         Angles moteurs:\n"
                 )
+                # Afficher les angles de tous les moteurs
+                for i in range(model.nq):
+                    motor_angle = round(float(qpos_current[i]), 4)
+                    if i == 7:
+                        print(f"         ID {i} (Pince G) : {motor_angle:+.4f} rad")
+                    elif i == 12:
+                        print(f"         ID {i} (Pince D) : {motor_angle:+.4f} rad")
+                    else:
+                        print(f"         ID {i} : {motor_angle:+.4f} rad")
 
 if __name__ == "__main__":
     main()
