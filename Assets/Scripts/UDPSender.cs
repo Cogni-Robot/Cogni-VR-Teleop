@@ -136,9 +136,9 @@ public class UDPSender : MonoBehaviour
         float      rg = _ctrl.rightGripValue;
 
         return FormattableString.Invariant($@"{{
-  ""head"":  {{""px"":{hp.x:F4},""py"":{hp.y:F4},""pz"":{hp.z:F4},""rx"":{hr.x:F4},""ry"":{hr.y:F4},""rz"":{hr.z:F4},""rw"":{hr.w:F4},""test"":true}},
-  ""left"":  {{""px"":{lp.x:F4},""py"":{lp.y:F4},""pz"":{lp.z:F4},""rx"":{lr.x:F4},""ry"":{lr.y:F4},""rz"":{lr.z:F4},""rw"":{lr.w:F4},""gripValue"":{lg:F4}}},
-  ""right"": {{""px"":{rp.x:F4},""py"":{rp.y:F4},""pz"":{rp.z:F4},""rx"":{rr.x:F4},""ry"":{rr.y:F4},""rz"":{rr.z:F4},""rw"":{rr.w:F4},""gripValue"":{rg:F4}}}
+  ""head"":  {{""px"":{hp.x:F4},""py"":{hp.y:F4},""pz"":{hp.z:F4},""rx"":{hr.x:F4},""ry"":{hr.y:F4},""rz"":{hr.z:F4},""rw"":{hr.w:F4},""f"":true}},
+  ""left"":  {{""px"":{lp.x:F4},""py"":{lp.y:F4},""pz"":{lp.z:F4},""rx"":{lr.x:F4},""ry"":{lr.y:F4},""rz"":{lr.z:F4},""rw"":{lr.w:F4},""gripValue"":{lg:F4},""f"":true}},
+  ""right"": {{""px"":{rp.x:F4},""py"":{rp.y:F4},""pz"":{rp.z:F4},""rx"":{rr.x:F4},""ry"":{rr.y:F4},""rz"":{rr.z:F4},""rw"":{rr.w:F4},""gripValue"":{rg:F4},""f"":true}}
 }}");
     }
 
