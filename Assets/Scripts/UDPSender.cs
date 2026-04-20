@@ -4,10 +4,14 @@ using System.Net.Sockets;
 using System.Text;
 using System;
 
+/// <summary>
+/// Envoie les poses (tête + mains) en JSON UDP vers le serveur Python.
+/// Cadence : sendRate Hz (défaut 30).
+/// Gère correctement le cycle de vie Unity : Awake → OnEnable → Update → OnDisable.
+/// </summary>
 [RequireComponent(typeof(OVRController))]
 public class UDPSender : MonoBehaviour
 {
-    // Variables, par défaut -> pointent vers le serveur local mujoco
     [Header("Réseau")]
     public string targetIP   = "192.168.1.159";
     public int    targetPort = 9000;
@@ -15,71 +19,111 @@ public class UDPSender : MonoBehaviour
     [Header("Cadence")]
     [Range(10, 60)]
     public int sendRate = 30;
+
     private OVRController _ctrl;
     private UdpClient     _udp;
     private IPEndPoint    _endpoint;
     private float         _timer;
-    private bool          _ready = false;
+    private bool          _initialized = false;
+    private float         _nextRetry = 0f;
+    private const float   RetryInterval = 2f;
 
-    // Initialisation du socket UDP et connexion au serveur
-    void Start()
+    void Awake()
     {
         _ctrl = GetComponent<OVRController>();
-
-        // Charger l'IP sauvegardée si elle existe
-        if (PlayerPrefs.HasKey("ServerIP"))
-            targetIP = PlayerPrefs.GetString("ServerIP");
-
-        Connect();
+        if (_ctrl == null)
+            Debug.LogError("[UDPSender] OVRController manquant sur le même GameObject !");
     }
 
-    // Tente de se connecter au serveur UDP avec l'IP et le port définis
-    public void Connect()
+    void Start()
+    {
+        InitializeConnection();
+    }
+
+    void OnEnable()
+    {
+        // Reconnexion si l'objet est réactivé en cours de jeu
+        if (!_initialized)
+            _nextRetry = 0f;
+    }
+
+    void OnDisable()
+    {
+        CloseConnection();
+    }
+
+    private void InitializeConnection()
     {
         try
         {
+            if (_ctrl == null)
+            {
+                Debug.LogError("[UDPSender] OVRController introuvable. Impossible d'initialiser.");
+                _initialized = false;
+                return;
+            }
+
             _udp?.Close();
             _udp      = new UdpClient();
             _endpoint = new IPEndPoint(IPAddress.Parse(targetIP), targetPort);
-            _ready    = true;
-            Debug.Log($"[UDPSender] → {targetIP}:{targetPort} @ {sendRate} Hz");
+            _initialized = true;
+            _nextRetry = 0f;
+
+            Debug.Log($"[UDPSender] ✓ Connecté → {targetIP}:{targetPort} @ {sendRate} Hz");
         }
         catch (Exception e)
         {
-            _ready = false;
-            Debug.LogError($"[UDPSender] IP invalide : {e.Message}");
+            _initialized = false;
+            Debug.LogError($"[UDPSender] ✗ Erreur init : {e.Message}");
         }
     }
 
-    /// <summary>Appelé depuis IPConfigPanel pour changer l'IP à chaud.</summary>
-    // Sauvegarde l'IP dans PlayerPrefs et tente de se connecter
-    public void SetIP(string ip)
+    private void CloseConnection()
     {
-        targetIP = ip;
-        PlayerPrefs.SetString("ServerIP", ip);
-        PlayerPrefs.Save();
-        Connect();
+        _initialized = false;
+        _udp?.Close();
+        _udp = null;
     }
 
-    // Envoi les données à la cadence définie dans sendRate
     void Update()
     {
-        if (!_ready) return;
+        // Reconnexion automatique si non initialisé
+        if (!_initialized)
+        {
+            if (Time.time >= _nextRetry)
+            {
+                _nextRetry = Time.time + RetryInterval;
+                InitializeConnection();
+            }
+            return;
+        }
+
         _timer += Time.deltaTime;
         if (_timer < 1f / sendRate) return;
         _timer = 0f;
         Send();
     }
 
-    // Envoi le JSON construit à l'adresse cible via UDP
     void Send()
     {
-        string json = BuildJson();
-        byte[] data = Encoding.UTF8.GetBytes(json);
-        _udp.Send(data, data.Length, _endpoint);
+        if (!_initialized || _udp == null)
+            return;
+
+        try
+        {
+            string json = BuildJson();
+            byte[] data = Encoding.UTF8.GetBytes(json);
+            _udp.Send(data, data.Length, _endpoint);
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[UDPSender] Erreur envoi UDP : {e.Message}. Reconnexion...");
+            _initialized = false;
+            _nextRetry = Time.time + RetryInterval;
+        }
     }
 
-    // Construire un JSON avec les positions et rotations de la tête et des mains
+
     string BuildJson()
     {
         Vector3    hp = _ctrl.headPosition;
@@ -96,6 +140,8 @@ public class UDPSender : MonoBehaviour
 }}");
     }
 
-    // Fermer le socket UDP à la destruction de l'objet
-    void OnDestroy() => _udp?.Close();
+    void OnDestroy()
+    {
+        CloseConnection();
+    }
 }
