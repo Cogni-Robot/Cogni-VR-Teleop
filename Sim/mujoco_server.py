@@ -7,7 +7,7 @@ import re
 import numpy as np
 import mujoco
 import mujoco.viewer
-
+from st3215 import ST3215
 from ik_solver import IKSolver
 
 # ── Chemins ───────────────────────────────────────────────────────────────────
@@ -137,6 +137,9 @@ def build_reply(model: mujoco.MjModel, qpos: np.ndarray,
     return json.dumps(payload).encode()
 
 def main():
+    servo = ST3215('/dev/ttyACM0')
+    print("\n" + "="*55)
+    print("Carte waveshare ST3215 détectée sur /dev/ttyACM0")
     print("=" * 55)
     print(" cogni-Robot — Serveur MuJoCo Phase 2 (Viewer 3D)")
     print("=" * 55)
@@ -192,26 +195,24 @@ def main():
 
             if not collision:
                 qpos_current = qpos_result
-            
-            # Appliquer les valeurs de grip aux pinces
-            # Index 7 = pince gauche, Index 12 = pince droite
-            # Logique : grip > 0 ouvre la pince, trigger > 0 ferme la pince
-            max_grip_angle = 1.5
-            min_grip_angle = -0.38  # Minimum autorisé
-            
-            # Pince gauche (inversée)
-            if grip_left > 0:
-                qpos_current[7] = 0.0  # Ouverte via grip
-            else:
-                pince_g_angle = trigger_left * max_grip_angle  # Fermée via trigger (inversée)
-                qpos_current[7] = max(pince_g_angle, min_grip_angle)
 
-            # Pince droite
-            if grip_right > 0:
-                qpos_current[12] = 0.0  # Ouverte via grip
-            else:
-                pince_d_angle = -trigger_right * max_grip_angle  # Fermée via trigger
-                qpos_current[12] = max(pince_d_angle, min_grip_angle)
+            # Index 7 = pince gauche, Index 12 = pince droite
+            # Facteur de ralentissement pour les pinces (ouverture et fermeture)
+            speed_factor = 1.3
+            
+            # Limites séparées :
+            max_close_angle = 0.38  # Limite pour le trigger
+            max_open_angle = 1.5    # Limite pour le grip (ouverture max)
+            
+            # Pince gauche : trigger ferme (val positif), grip ouvre (val négatif)
+            val_gauche = ((trigger_left / speed_factor) * max_close_angle) - ((grip_left / (speed_factor*3)) * max_open_angle)
+            qpos_current[7] = np.clip(val_gauche, -max_open_angle, max_close_angle)
+
+            # Pince droite : trigger ferme (val négatif), grip ouvre (val positif)
+            val_droite = -((trigger_right / speed_factor) * max_close_angle) + ((grip_right / (speed_factor*3)) * max_open_angle)
+            qpos_current[12] = np.clip(val_droite, -max_close_angle, max_open_angle)
+
+
 
             reply = build_reply(model, qpos_current, ok_l, ok_r, collision, left_pos, right_pos)
             sock.sendto(reply, (addr[0], SEND_PORT))
@@ -235,13 +236,29 @@ def main():
                 )
                 # Afficher les angles de tous les moteurs
                 for i in range(model.nq):
-                    motor_angle = round(float(qpos_current[i]), 4)
-                    if i == 7:
-                        print(f"         ID {i} (Pince G) : {motor_angle:+.4f} rad")
-                    elif i == 12:
-                        print(f"         ID {i} (Pince D) : {motor_angle:+.4f} rad")
+                    if i < len(JOINT_NAMES):
+                        joint_name = JOINT_NAMES[i]
                     else:
-                        print(f"         ID {i} : {motor_angle:+.4f} rad")
+                        joint_name = f"joint_{i}"
+                    
+                    motor_angle = float(qpos_current[i])
+                    # Conversion en degrés
+                    angle_deg = math.degrees(motor_angle)
+                    # Formule demandée (Radian * 4096 / PI)
+                    angle_custom = 2048 + (motor_angle * 4096) / math.pi
+                    
+                    print(f"         ID {i} ({joint_name}) : {angle_custom:+.0f} | {angle_deg:+.1f}°")
+
+            # Envoyer les angles aux moteurs
+            # Pince droite (ID 12)
+            angle_pince_droite = qpos_current[12]
+            angle_custom_droite = int(2048 + (angle_pince_droite * 4096) / math.pi)
+            servo.MoveTo(14, angle_custom_droite)
+
+            # Pince gauche (ID 7)
+            angle_pince_gauche = qpos_current[7]
+            angle_custom_gauche = int(2048 + (angle_pince_gauche * 4096) / math.pi)
+            servo.MoveTo(15, angle_custom_gauche)
 
 if __name__ == "__main__":
     main()
