@@ -249,16 +249,28 @@ def main():
                     
                     print(f"         ID {i} ({joint_name}) : {angle_custom:+.0f} | {angle_deg:+.1f}°")
 
-            # Envoyer les angles aux moteurs
-            # Pince droite (ID 12)
-            angle_pince_droite = qpos_current[12]
-            angle_custom_droite = int(2048 + (angle_pince_droite * 4096) / math.pi)
-            servo.MoveTo(14, angle_custom_droite)
 
-            # Pince gauche (ID 7)
-            angle_pince_gauche = qpos_current[7]
-            angle_custom_gauche = int(2048 + (angle_pince_gauche * 4096) / math.pi)
-            servo.MoveTo(15, angle_custom_gauche)
+            if config["enable_sim2real"]:
+                # Envoyer les angles aux moteurs
+                # Pince droite (ID 12)
+                angle_pince_droite = qpos_current[12]
+                angle_custom_droite = int(2048 + (angle_pince_droite * 4096) / math.pi)
+                servo.MoveTo(14, angle_custom_droite)
+
+                # Pince gauche (ID 7)
+                angle_pince_gauche = qpos_current[7]
+                angle_custom_gauche = int(2048 + (angle_pince_gauche * 4096) / math.pi)
+                servo.MoveTo(15, angle_custom_gauche)
+
+                # Rotation cou ZX (13)
+                angle_cou_zx = qpos_current[14]
+                angle_custom_cou_zx = int(2048 + (-1 * angle_cou_zx * 4096) / math.pi)
+                servo.MoveTo(5, angle_custom_cou_zx)
+
+                # Rotation cou YX (14)
+                angle_cou_yx = qpos_current[13]
+                angle_custom_cou_yx = int(2048 + (angle_cou_yx * 4096) / math.pi)
+                servo.MoveTo(4, angle_custom_cou_yx)
 
 if __name__ == "__main__":
     main()

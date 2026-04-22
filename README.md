@@ -252,6 +252,23 @@ Puis : `Build and Run`
 *Repo servos Feetech : [github.com/Cogni-Robot/servo-controller](https://github.com/Cogni-Robot/servo-controller)*
 
 
+ldconfig -p | grep libssl
+// If commands no includes libssl1.1 this is the problem, and resolve this with :
+
+wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+sudo dpkg -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+sudo apt --fix-broken install
+
+pkill -9 Unity
+rm -rf Librairy
+
+and relaunch your project
+
+
+Add in manigest.json:
+```json
+"com.unity.xr.openxr": "1.6.0"
+```
 Unity Version : 2022.3.62f3
 Link to download this version : https://unity.com/releases/editor/archive
 
