@@ -13,7 +13,7 @@ using System;
 public class UDPSender : MonoBehaviour
 {
     [Header("Réseau")]
-    public string targetIP   = "192.168.1.159";
+    public string targetIP   = "192.168.1.91"; // laptop : 192.168.1.159
     public int    targetPort = 9000;
 
     [Header("Cadence")]
