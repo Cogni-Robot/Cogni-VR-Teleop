@@ -358,7 +358,7 @@ def main():
 
                 # Rotation yaw épaule
                 angle_epaule_yz_gauche = qpos_current[4]
-                angle_custom_epaule_yz_gauche = int(204.8 + 2048 + (angle_epaule_yz_gauche * 4096) / math.pi)
+                angle_custom_epaule_yz_gauche = int(256 + 2048 + (angle_epaule_yz_gauche * 4096) / math.pi)
                 servo.MoveTo(9, angle_custom_epaule_yz_gauche)
 
                 # Rotation biceps
@@ -371,7 +371,7 @@ def main():
                 angle_custom_coude_gauche = int(2048 + (angle_coude_gauche * 4096) / math.pi)
                 servo.MoveTo(13, angle_custom_coude_gauche)
 
-                # Pince gauche (ID 7)
+                # Pince gauche
                 angle_pince_gauche = qpos_current[7]
                 angle_custom_gauche = int(2048 + (angle_pince_gauche * 4096) / math.pi)
                 servo.MoveTo(15, angle_custom_gauche)
