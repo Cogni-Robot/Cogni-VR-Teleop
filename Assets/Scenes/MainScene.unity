@@ -242,6 +242,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simulationMode: 0
+  leftGripValue: 0
+  rightGripValue: 0
+  leftGripButtonValue: 0
+  rightGripButtonValue: 0
   debugLeftHand: {fileID: 2084021624}
   debugRightHand: {fileID: 1531853734}
   headPosition: {x: 0, y: 0, z: 0}
@@ -292,7 +296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ce61150f3a2f74a3b1a5024647a8c2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetIP: 192.168.1.159
+  targetIP: 192.168.1.91
   targetPort: 9000
   sendRate: 30
 --- !u!1 &920795039
