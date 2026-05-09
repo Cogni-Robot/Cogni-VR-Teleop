@@ -29,11 +29,12 @@ class MotorOutputAdapter:
 
         # Right arm
         commands.append(ServoCommand(6, int(2048 + (qpos[8] * RAD_TO_SERVO)))) # Epaule XY droite
-        # commands.append(ServoCommand(10, int(2048 + (qpos[9] * RAD_TO_SERVO)))) # Epaule YZ droite
-        # commands.append(ServoCommand(12, int(2048 + (qpos[10] * RAD_TO_SERVO)))) # Biceps droite
+        commands.append(ServoCommand(8, int(2048 + (-1 * qpos[9] * RAD_TO_SERVO)))) # Epaule YZ droite
+        commands.append(ServoCommand(10, int(2048 + (qpos[10] * RAD_TO_SERVO)))) # Biceps droite
+        commands.append(ServoCommand(12, int(2048 + (qpos[11] * RAD_TO_SERVO)))) # Coude droite
 
         # Grippers
-        commands.append(ServoCommand(15, int(2048 + (qpos[7] * 4096 / math.pi)))) # Pince gauche
+        commands.append(ServoCommand(15, int(2048 + qpos[7] * 4096 / math.pi))) # Pince gauche
         commands.append(ServoCommand(14, int(2048 + qpos[12] * 4096 / math.pi))) # Pince droite
 
         return commands
