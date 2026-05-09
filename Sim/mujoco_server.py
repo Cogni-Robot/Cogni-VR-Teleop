@@ -315,65 +315,82 @@ def main():
                         f"         ID {i} ({joint_name}) : {angle_custom:+.0f} | {angle_deg:+.1f}°"
                     )
 
+            RAD_TO_SERVO = 2048 / math.pi
+            # Calculer et afficher les angles pour les moteurs
+            print(
+                f"         Angles calculés pour les moteurs:\n"
+                f"         Pince D (ID 14) : {int(2048 + qpos_current[12] * RAD_TO_SERVO):+.0f}\n"
+                f"         Cou ZX (ID 5) : {int(2048 + -1 * qpos_current[14] * RAD_TO_SERVO):+.0f}\n"
+                f"         Cou YX (ID 4) : {int(2048 + qpos_current[13] * RAD_TO_SERVO):+.0f}\n"
+                f"         Taille (ID 1) : {int(2048 + qpos_current[0] * RAD_TO_SERVO):+.0f}\n"
+                f"         Rouli torse (ID 3) : {int(2048 + qpos_current[1] * RAD_TO_SERVO):+.0f}\n"
+                f"         Pitch torse (ID 2) : {int(2048 + qpos_current[2] * RAD_TO_SERVO):+.0f}\n"
+                f"         Épaule XY G (ID 7) : {int(2048 + qpos_current[3] * RAD_TO_SERVO):+.0f}\n"
+                f"         Épaule YZ G (ID 9) : {int(2048 + qpos_current[4] * RAD_TO_SERVO):+.0f}\n"
+                f"         Biceps G (ID 11) : {int(2048 + qpos_current[5] * RAD_TO_SERVO):+.0f}\n"
+                f"         Coude G (ID 13) : {int(2048 + qpos_current[6] * RAD_TO_SERVO):+.0f}\n"
+                f"         Pince G (ID 15) : {int(2048 + qpos_current[7] * RAD_TO_SERVO):+.0f}\n"
+            )
+
             if config.getboolean("global", "enable_sim2real") and servo is not None:
                 # Envoyer les angles aux moteurs
                 # Pince droite (ID 12)
                 angle_pince_droite = qpos_current[12]
-                angle_custom_droite = int(2048 + (angle_pince_droite * 4096) / math.pi)
+                angle_custom_droite = int(2048 + angle_pince_droite * RAD_TO_SERVO)
                 servo.MoveTo(14, angle_custom_droite)
 
                 
 
                 # Rotation cou ZX (13)
                 angle_cou_zx = qpos_current[14]
-                angle_custom_cou_zx = int(2048 + (-1 * angle_cou_zx * 4096) / math.pi)
+                angle_custom_cou_zx = int(2048 + (-1 * angle_cou_zx * RAD_TO_SERVO))
                 servo.MoveTo(5, angle_custom_cou_zx)
 
                 # Rotation cou YX (14)
                 angle_cou_yx = qpos_current[13]
-                angle_custom_cou_yx = int(2048 + (angle_cou_yx * 4096) / math.pi)
+                angle_custom_cou_yx = int(2048 + (angle_cou_yx * RAD_TO_SERVO))
                 servo.MoveTo(4, angle_custom_cou_yx)
 
                 # Rotation taille (0)
                 angle_taille = qpos_current[0]
-                angle_custom_taille = int(2048 + (angle_taille * 4096) / math.pi)
+                angle_custom_taille = int(2048 + (angle_taille * RAD_TO_SERVO))
                 servo.MoveTo(1, angle_custom_taille)
 
                 # Rotation rouli torse (1)
                 angle_rouli = qpos_current[1]
-                angle_custom_rouli = int(2048 + (angle_rouli * 4096) / math.pi)
+                angle_custom_rouli = int(2048 + (angle_rouli * RAD_TO_SERVO))
                 servo.MoveTo(3, angle_custom_rouli)
 
                 # Rotation pitch torse (2)
                 angle_pitch_torso = qpos_current[2]
-                angle_custom_pitch = int(2048 + (angle_pitch_torso * 4096) / math.pi)
+                angle_custom_pitch = int(2048 + (angle_pitch_torso * RAD_TO_SERVO))
                 servo.MoveTo(2, angle_custom_pitch)
 
                 # BRAS gauche
 
                 # Rotation pitch épaule
                 angle_epaule_xy_gauche = qpos_current[3]
-                angle_custom_epaule_xy_gauche = int(2048 + (angle_epaule_xy_gauche * 4096) / math.pi)
+                angle_custom_epaule_xy_gauche = int(2048 + (angle_epaule_xy_gauche * RAD_TO_SERVO))
                 servo.MoveTo(7, angle_custom_epaule_xy_gauche)
 
                 # Rotation yaw épaule
                 angle_epaule_yz_gauche = qpos_current[4]
-                angle_custom_epaule_yz_gauche = int(512 + 2048 + (angle_epaule_yz_gauche * 4096) / math.pi)
+                angle_custom_epaule_yz_gauche = int(2048 + (angle_epaule_yz_gauche * RAD_TO_SERVO))
                 servo.MoveTo(9, angle_custom_epaule_yz_gauche)
 
                 # Rotation biceps
                 angle_biceps_gauche = qpos_current[5]
-                angle_custom_biceps_gauche = int(2048 + (angle_biceps_gauche * 4096) / math.pi)
+                angle_custom_biceps_gauche = int(2048 + (angle_biceps_gauche * RAD_TO_SERVO))
                 servo.MoveTo(11, angle_custom_biceps_gauche)
 
                 # Rotation coude
                 angle_coude_gauche = qpos_current[6]
-                angle_custom_coude_gauche = int(2048 + (angle_coude_gauche * 4096) - 1024 / math.pi)
+                angle_custom_coude_gauche = int(2048 + (angle_coude_gauche * RAD_TO_SERVO))
                 servo.MoveTo(13, angle_custom_coude_gauche)
 
                 # Pince gauche
                 angle_pince_gauche = qpos_current[7]
-                angle_custom_gauche = int(2048 + (angle_pince_gauche * 4096) / math.pi)
+                angle_custom_gauche = int(2048 + (angle_pince_gauche * RAD_TO_SERVO))
                 servo.MoveTo(15, angle_custom_gauche)
 
 if __name__ == "__main__":
