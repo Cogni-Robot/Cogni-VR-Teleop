@@ -28,7 +28,7 @@ class MotorOutputAdapter:
         commands.append(ServoCommand(13, int(2048 + (qpos[6] * RAD_TO_SERVO)))) # Coude gauche
 
         # Right arm
-        commands.append(ServoCommand(6, int(2048 + (-1 * qpos[8] * RAD_TO_SERVO)))) # Epaule XY droite
+        commands.append(ServoCommand(6, int(2048 + (qpos[8] * RAD_TO_SERVO)))) # Epaule XY droite
         # commands.append(ServoCommand(10, int(2048 + (qpos[9] * RAD_TO_SERVO)))) # Epaule YZ droite
         # commands.append(ServoCommand(12, int(2048 + (qpos[10] * RAD_TO_SERVO)))) # Biceps droite
 
