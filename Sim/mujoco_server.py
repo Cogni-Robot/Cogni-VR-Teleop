@@ -39,6 +39,7 @@ ROBOT_REST_R = np.array([-0.07, -0.20, 0.05])
 
 ROTATE_180 = True
 MIRROR_MODE = False
+RAD_TO_SERVO = 2048 / math.pi
 
 JOINT_NAMES = [
     "rotation_taille",
@@ -315,28 +316,27 @@ def main():
                         f"         ID {i} ({joint_name}) : {angle_custom:+.0f} | {angle_deg:+.1f}°"
                     )
 
-            RAD_TO_SERVO = 2048 / math.pi
             # Calculer et afficher les angles pour les moteurs
-            print(
-                f"         Angles calculés pour les moteurs:\n"
-                f"         Pince D (ID 14) : {int(2048 + qpos_current[12] * RAD_TO_SERVO):+.0f}\n"
-                f"         Cou ZX (ID 5) : {int(2048 + -1 * qpos_current[14] * RAD_TO_SERVO):+.0f}\n"
-                f"         Cou YX (ID 4) : {int(2048 + qpos_current[13] * RAD_TO_SERVO):+.0f}\n"
-                f"         Taille (ID 1) : {int(2048 + qpos_current[0] * RAD_TO_SERVO):+.0f}\n"
-                f"         Rouli torse (ID 3) : {int(2048 + qpos_current[1] * RAD_TO_SERVO):+.0f}\n"
-                f"         Pitch torse (ID 2) : {int(2048 + qpos_current[2] * RAD_TO_SERVO):+.0f}\n"
-                f"         Épaule XY G (ID 7) : {int(2048 + qpos_current[3] * RAD_TO_SERVO):+.0f}\n"
-                f"         Épaule YZ G (ID 9) : {int(2048 + qpos_current[4] * RAD_TO_SERVO):+.0f}\n"
-                f"         Biceps G (ID 11) : {int(2048 + qpos_current[5] * RAD_TO_SERVO):+.0f}\n"
-                f"         Coude G (ID 13) : {int(2048 + qpos_current[6] * RAD_TO_SERVO):+.0f}\n"
-                f"         Pince G (ID 15) : {int(2048 + qpos_current[7] * RAD_TO_SERVO):+.0f}\n"
-            )
+            # print(
+            #     f"         Angles calculés pour les moteurs:\n"
+            #     f"         Pince D (ID 14) : {int(2048 + qpos_current[12] * RAD_TO_SERVO):+.0f}\n"
+            #     f"         Cou ZX (ID 5) : {int(2048 + -1 * qpos_current[14] * RAD_TO_SERVO):+.0f}\n"
+            #     f"         Cou YX (ID 4) : {int(2048 + qpos_current[13] * RAD_TO_SERVO):+.0f}\n"
+            #     f"         Taille (ID 1) : {int(2048 + qpos_current[0] * RAD_TO_SERVO):+.0f}\n"
+            #     f"         Rouli torse (ID 3) : {int(2048 + qpos_current[1] * RAD_TO_SERVO):+.0f}\n"
+            #     f"         Pitch torse (ID 2) : {int(2048 + qpos_current[2] * RAD_TO_SERVO):+.0f}\n"
+            #     f"         Épaule XY G (ID 7) : {int(2048 + qpos_current[3] * RAD_TO_SERVO):+.0f}\n"
+            #     f"         Épaule YZ G (ID 9) : {int(2048 + qpos_current[4] * RAD_TO_SERVO):+.0f}\n"
+            #     f"         Biceps G (ID 11) : {int(2048 + qpos_current[5] * RAD_TO_SERVO):+.0f}\n"
+            #     f"         Coude G (ID 13) : {int(2048 + qpos_current[6] * RAD_TO_SERVO):+.0f}\n"
+            #     f"         Pince G (ID 15) : {int(2048 + qpos_current[7] * RAD_TO_SERVO):+.0f}\n"
+            # )
 
             if config.getboolean("global", "enable_sim2real") and servo is not None:
                 # Envoyer les angles aux moteurs
                 # Pince droite (ID 12)
                 angle_pince_droite = qpos_current[12]
-                angle_custom_droite = int(2048 + angle_pince_droite * RAD_TO_SERVO)
+                angle_custom_droite = int(2048 + angle_pince_droite * 4096 / math.pi)
                 servo.MoveTo(14, angle_custom_droite)
 
                 
@@ -390,7 +390,7 @@ def main():
 
                 # Pince gauche
                 angle_pince_gauche = qpos_current[7]
-                angle_custom_gauche = int(2048 + (angle_pince_gauche * RAD_TO_SERVO))
+                angle_custom_gauche = int(2048 + (angle_pince_gauche * 4096 / math.pi))
                 servo.MoveTo(15, angle_custom_gauche)
 
 if __name__ == "__main__":
