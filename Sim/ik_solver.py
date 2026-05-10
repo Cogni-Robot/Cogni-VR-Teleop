@@ -34,9 +34,10 @@ STEP     = 0.4    # pas de mise à jour
 
 
 class IKSolver:
-    def __init__(self, model: mujoco.MjModel):
+    def __init__(self, model: mujoco.MjModel, debug: bool = False):
         self.model = model
         self.data  = mujoco.MjData(model)
+        self.debug = debug
 
         # Récupérer les IDs des corps end-effector
         self._left_id  = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, LEFT_EE_BODY)
@@ -52,9 +53,10 @@ class IKSolver:
         self._pan_id  = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, HEAD_PAN_JOINT)
         self._tilt_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, HEAD_TILT_JOINT)
 
-        print(f"[IK] Left EE  : '{LEFT_EE_BODY}'  (id={self._left_id})")
-        print(f"[IK] Right EE : '{RIGHT_EE_BODY}' (id={self._right_id})")
-        print(f"[IK] nq={model.nq}  nv={model.nv}")
+        if self.debug == True :
+            print(f"[IK] Left EE  : '{LEFT_EE_BODY}'  (id={self._left_id})")
+            print(f"[IK] Right EE : '{RIGHT_EE_BODY}' (id={self._right_id})")
+            print(f"[IK] nq={model.nq}  nv={model.nv}")
 
     def solve(self,
               qpos_init:   np.ndarray,
