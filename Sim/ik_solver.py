@@ -95,6 +95,13 @@ class IKSolver:
 
     #  IK interne 
     def _ik_arm(self, body_id: int, target: np.ndarray) -> bool:
+        # nv = nombre d'articulations (dof : degrees of freedom)
+        # jac : matrice jacobienne 3 x nv (pour la position du corps)
+        # colonnes : joint
+        # lignes : coordonnées x, y, z
+        # [[x],
+        # [y],
+        # [z],]
         nv  = self.model.nv
         jac = np.zeros((3, nv))
 
