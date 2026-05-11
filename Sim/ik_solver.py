@@ -120,8 +120,9 @@ class IKSolver:
             JJT = jac @ jac.T
             dq  = jac.T @ np.linalg.solve(JJT + LAMBDA**2 * np.eye(3), error)
 
-            self.data.qpos += STEP * dq
-            mujoco.mj_normalizeQuat(self.model, self.data.qpos)
+            # self.data.qpos += STEP * dq
+            mujoco.mj_integratePos(self.model, self.data.qpos, dq * STEP, 1.0)
+            # mujoco.mj_normalizeQuat(self.model, self.data.qpos)
             # Clamp dans les limites
             self._clamp_qpos()
 

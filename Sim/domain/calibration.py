@@ -5,8 +5,8 @@ class VRCalibration:
         self.vr_origin_l = None
         self.vr_origin_r = None
         self.MOTION_SCALE = 0.5
-        self.ROBOT_REST_L = np.array([0.07, -0.20, 0.05])
-        self.ROBOT_REST_R = np.array([-0.07, -0.20, 0.05])
+        self.ROBOT_REST_L = np.array([0.09, -0.20, 0.07])
+        self.ROBOT_REST_R = np.array([-0.09, -0.20, 0.07])
 
     @property
     def is_calibrated(self) -> bool:
