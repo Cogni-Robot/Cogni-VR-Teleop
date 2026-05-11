@@ -2,7 +2,6 @@ import re
 import mujoco
 
 COGNI_URDF_REPO = "./Cogni-urdf"
-MJCF_PATH = f"{COGNI_URDF_REPO}/cogni_scene.xml"
 MESH_DIR = f"{COGNI_URDF_REPO}/meshes"
 
 def patch_meshdir(xml_path: str, mesh_dir: str) -> str:
@@ -21,6 +20,7 @@ def patch_meshdir(xml_path: str, mesh_dir: str) -> str:
     """
     return content.replace("</worldbody>", debug_sites)
 
-def load_sim_model() -> mujoco.MjModel:
-    xml = patch_meshdir(MJCF_PATH, MESH_DIR)
+def load_sim_model(scene_file: str = "cogni_scene.xml") -> mujoco.MjModel:
+    xml_path = f"{COGNI_URDF_REPO}/scenes/{scene_file}"
+    xml = patch_meshdir(xml_path, MESH_DIR)
     return mujoco.MjModel.from_xml_string(xml)

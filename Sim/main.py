@@ -30,9 +30,10 @@ def main():
     sim2real_enabled = config.getboolean("global", "enable_sim2real", fallback=False)
     enable_keyboard  = config.getboolean("global", "enable_keyboard_control", fallback=False)
     debug_mode       = config.getboolean("global", "debug", fallback=False)
+    scene_file       = config.get("global", "scene_file", fallback="cogni_scene.xml")
     board_port       = config.get("sim2real", "board", fallback="/dev/ttyACM0")
 
-    model = load_sim_model()
+    model = load_sim_model(scene_file)
     solver = IKSolver(model, debug=debug_mode)
 
     transport = UDPTransport(9000, 9001)
@@ -114,13 +115,14 @@ def main():
                 hz = frame / (time.time() - t0)
                 ik_status = "OK" if (state.ok_l and state.ok_r) else ("partielle" if (state.ok_l or state.ok_r) else "❌")
                 col_status = "[COLLISION]" if state.collision else ""
-                print(
-                    f"[{frame:5d}] {hz:4.1f} Hz | IK {ik_status} {col_status}\n"
-                    f"         Cible G : ({target.target_left[0]:+.3f}, {target.target_left[1]:+.3f}, {target.target_left[2]:+.3f})"
-                    f"  EE G : ({state.left_pos[0]:+.3f}, {state.left_pos[1]:+.3f}, {state.left_pos[2]:+.3f})\n"
-                    f"         Cible D : ({target.target_right[0]:+.3f}, {target.target_right[1]:+.3f}, {target.target_right[2]:+.3f})"
-                    f"  EE D : ({state.right_pos[0]:+.3f}, {state.right_pos[1]:+.3f}, {state.right_pos[2]:+.3f})\n"
-                )
+                if ik_status != "OK" or state.collision:
+                    print(
+                        f"[{frame:5d}] {hz:4.1f} Hz | IK {ik_status} {col_status}\n"
+                        f"         Cible G : ({target.target_left[0]:+.3f}, {target.target_left[1]:+.3f}, {target.target_left[2]:+.3f})"
+                        f"  EE G : ({state.left_pos[0]:+.3f}, {state.left_pos[1]:+.3f}, {state.left_pos[2]:+.3f})\n"
+                        f"         Cible D : ({target.target_right[0]:+.3f}, {target.target_right[1]:+.3f}, {target.target_right[2]:+.3f})"
+                        f"  EE D : ({state.right_pos[0]:+.3f}, {state.right_pos[1]:+.3f}, {state.right_pos[2]:+.3f})\n"
+                    )
                 if LOG is True:
                     for i in range(model.nq):
                         joint_name = JOINT_NAMES[i] if i < len(JOINT_NAMES) else f"joint_{i}"
